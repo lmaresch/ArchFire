@@ -1,2 +1,2 @@
 # ArchFire
-A try to rebuild IPFire based in ArchLinux
+A try to rebuild IPFire based on ArchLinux
