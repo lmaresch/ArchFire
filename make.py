@@ -102,10 +102,45 @@ def executeProcess(command, text = '', stdout = False, stderr = False, warnOnErr
         printError(textErr)
         return False
 
+def retrieveDataFromPKGBUILD(packageDir):
+    try:
+        f = open(os.path.join(packageDir, 'PKGBUILD'), 'r')
+        line = f.readline().strip()
+        packageName = ''
+        packageVersion = ''
+        packageRelease = ''
+        packageArch = ''
+        counter = 0
+        while line:
+            if line.startswith('pkgname='):
+                packageName = line[8:-1]
+                counter += 1
+            elif line.startswith('pkgver='):
+                packageVersion = line[7:-1]
+                counter += 1
+            elif line.startswith('pkgrel='):
+                packageRelease = line[7:-1]
+                counter += 1
+            elif line.startswith('arch='):
+                if 'any' in line:
+                    packageArch = 'any'
+                    counter += 1
+                elif 'x86_64' in line:
+                    packageArch = 'x86_64'
+                    counter += 1
+            if counter == 4:
+                break
+            line = f.readline()
+    finally:
+        f.close()
+    return packageName, packageVersion, packageRelease, packageArch
+
 def createPackage(packageName):
     command = ['/usr/sbin/makechrootpkg', '-c', '-r', archfire_build]
     printStatusText('Creating package \'' + packageName + '\' and add it to local repository...')
-    proc = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True, cwd = os.path.join(archfire_packages, packageName))
+    packageDir = os.path.join(archfire_packages, packageName)
+    packageName, packageVersion, packageRelease, packageArch = retrieveDataFromPKGBUILD(packageDir)
+    proc = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True, cwd = packageDir)
     textOut, textErr = proc.communicate()
     writeLogFile(os.path.join(archfire_logs, 'build_' + packageName + '.log'))
     if proc.returncode != 0:
@@ -135,4 +170,9 @@ if not os.path.exists(archfire_build_bootstrap):
 
 if not executeProcess(['/usr/bin/arch-nspawn', archfire_build_bootstrap, '/usr/bin/pacman', '-Syu'], text = 'Updating toolchain', log = True):
     exit(1)
+packageBaseList = [
+    'iana-etc',
+    
+]
 
+createPackage('iana-etc')
