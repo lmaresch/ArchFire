@@ -21,6 +21,8 @@ archfire_path = os.path.dirname(os.path.realpath(__file__))
 archfire_build = os.path.join(archfire_path, 'build')
 archfire_build_bootstrap = os.path.join(archfire_build, 'root')
 archfire_logs = os.path.join(archfire_path, 'logs')
+archfire_packages = os.path.join(archfire_path, 'packages')
+archfire_repo = os.path.join(archfire_path, 'repo')
 
 def printError(text):
     for line in text.splitlines():
@@ -68,6 +70,15 @@ def createDirectory(dirname):
             printError(e.strerror)
             exit(1)
 
+def writeLogFile(fileAndPath, textOut, textErr):
+        f = open(fileAndPath, 'w')
+        if len(textOut) > 0:
+            f.write(textOut)
+        if len(textErr) > 0:
+            f.write(textErr)
+        f.close()
+
+
 def executeProcess(command, text = '', stdout = False, stderr = False, warnOnError = False, log = False, logName = ''):
     if len(text) == 0:
         text = 'Executing command \'' + ' '.join(command) + '\'...'
@@ -77,12 +88,7 @@ def executeProcess(command, text = '', stdout = False, stderr = False, warnOnErr
     if log:
         if len(logName) == 0:
             logName = os.path.basename(command[0])
-        f = open(os.path.join(archfire_logs, logName + '.log'), 'w')
-        if len(textOut) > 0:
-            f.write(textOut)
-        if len(textErr) > 0:
-            f.write(textErr)
-        f.close()
+        writeLogFile(os.path.join(archfire_logs, logName + '.log'), textOut, textErr)
     if proc.returncode == 0:
         printStatusOK()
         if stdout:
@@ -96,6 +102,18 @@ def executeProcess(command, text = '', stdout = False, stderr = False, warnOnErr
         printError(textErr)
         return False
 
+def createPackage(packageName):
+    command = ['/usr/sbin/makechrootpkg', '-c', '-r', archfire_build]
+    printStatusText('Creating package \'' + packageName + '\' and add it to local repository...')
+    proc = subprocess.Popen(command, stdout = subprocess.PIPE, stderr = subprocess.PIPE, universal_newlines = True, cwd = os.path.join(archfire_packages, packageName))
+    textOut, textErr = proc.communicate()
+    writeLogFile(os.path.join(archfire_logs, 'build_' + packageName + '.log'))
+    if proc.returncode != 0:
+        printStatusFail()
+        printError(textErr)
+        exit(1)
+    command = ['/usr/sbin/repo-add', os.path.join(archfire_repo, 'archfire.db.tar.gz')]
+
 printStatusText('Checking if script is started by user \'root\'...')
 if os.geteuid() != 0:
     printStatusFail()
@@ -105,6 +123,7 @@ printStatusOK()
 
 createDirectory(archfire_build)
 createDirectory(archfire_logs)
+createDirectory(archfire_repo)
 if not executeProcess(['/usr/bin/pacman', '-Qi', 'devtools'], text = 'Checking if package \'devtools\' is already installed...', warnOnError = True, log = True, logName = 'pacman_Qi'):
     printWarning('Package \'devtools\' is not installed.')
     if not executeProcess(['/usr/bin/pacman', '-S', '--noconfirm', 'devtools'], log = True, logName = 'pacman_S_devtools'):
