@@ -168,11 +168,11 @@ if not os.path.exists(archfire_build_bootstrap):
     if not executeProcess(['/usr/bin/mkarchroot', archfire_build_bootstrap, 'base-devel'], text = 'Installing toolchain...', log = True):
         exit(1)
 
-if not executeProcess(['/usr/bin/arch-nspawn', archfire_build_bootstrap, '/usr/bin/pacman', '-Syu'], text = 'Updating toolchain', log = True):
+if not executeProcess(['/usr/bin/arch-nspawn', archfire_build_bootstrap, '/usr/bin/pacman', '-Syu', '--noconfirm'], text = 'Updating toolchain', log = True):
     exit(1)
 packageBaseList = [
     'iana-etc',
     
 ]
 
-createPackage('iana-etc')
+#createPackage('iana-etc')
