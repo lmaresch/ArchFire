@@ -1,0 +1,23 @@
+#!/bin/bash
+case "$1" in
+	ide)
+		rm -f /var/ipfire/extrahd/scan
+		for DEV in `find /sys/block/* -maxdepth 0 ! -name sr* ! -name ram* ! -name loop* -exec basename {} \; | sort | uniq`
+		do
+			VENDOR=`cat /sys/block/$DEV/device/vendor 2>/dev/null`
+			MODEL=`cat /sys/block/$DEV/device/model 2>/dev/null`
+			REV=`cat /sys/block/$DEV/device/rev 2>/dev/null`
+			echo "$DEV;$VENDOR $MODEL $REV" >> /var/ipfire/extrahd/scan
+		done
+		;;
+	partitions)
+		cat /proc/partitions | awk '{print $4 " " $3 }' | grep -v name | grep -v "^[[:space:]]*$" | \
+			while read device size; do
+				[ -z "${device}" ] && continue
+				echo "${device};${size};$(blkid -c /dev/null -s UUID -o value /dev/${device});"
+			done > /var/ipfire/extrahd/partitions
+		;;
+	*)
+		echo "Usage: $0 (ide|partitions)"
+		;;
+esac

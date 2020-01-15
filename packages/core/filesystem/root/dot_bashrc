@@ -1,0 +1,18 @@
+# .bashrc
+
+# User specific aliases and functions
+
+alias rm='rm -i'
+alias cp='cp -i'
+alias mv='mv -i'
+
+# Source global definitions
+if [ -f /etc/bashrc ]; then
+	. /etc/bashrc
+fi
+
+# Automatically logout only console users after 10 minutes.
+export TMOUT=0
+if [ -z "${SSH_TTY}" ] && [ -z "${STY}" ]; then
+	export TMOUT=600
+fi

@@ -1,0 +1,143 @@
+#!/usr/bin/perl
+
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2008-2013  IPFire Team  <info@ipfire.org>                     #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+
+use strict;
+#use warnings;
+
+use RRDs;
+require "/var/ipfire/general-functions.pl";
+require "${General::swroot}/lang.pl";
+
+# Settings
+$ENV{PATH}="/bin:/sbin:/usr/bin:/usr/sbin:/usr/local/bin:/usr/local/sbin";
+my $temp = '';
+my $ERROR;
+my $path_smartctl = "/usr/sbin/smartctl";
+
+my %color = ();
+my %mainsettings = ();
+&General::readhash("${General::swroot}/main/settings", \%mainsettings);
+&General::readhash("/srv/web/ipfire/html/themes/".$mainsettings{'THEME'}."/include/colors.txt", \%color);
+
+if ( $mainsettings{'RRDLOG'} eq "" ){
+	$mainsettings{'RRDLOG'}="/var/log/rrd";
+	&General::writehash("${General::swroot}/main/settings", \%mainsettings);
+}
+
+sub updatehdddata{
+	my $disk = $_[0];
+	my $standby;
+	my @array = split(/\//,$disk);
+
+	if ( ! -e "$mainsettings{'RRDLOG'}/hddshutdown-".$array[$#array].".rrd"){
+		# database did not exist -> create
+		RRDs::create ("$mainsettings{'RRDLOG'}/hddshutdown-".$array[$#array].".rrd", "--step=300",
+		"DS:standby:GAUGE:600:0:1",
+		"RRA:AVERAGE:0.5:1:576",
+		"RRA:AVERAGE:0.5:6:672",
+		"RRA:AVERAGE:0.5:24:732",
+		"RRA:AVERAGE:0.5:144:1460");
+		$ERROR = RRDs::error;
+		print "Error in RRD::create for hddshutdown-".$array[$#array].": $ERROR\n" if $ERROR;
+	}
+
+	if (-e "/var/run/hddshutdown-".$array[$#array]) {$standby = 1;}
+	else {$standby = 0;}
+
+	RRDs::update ("$mainsettings{'RRDLOG'}/hddshutdown-".$array[$#array].".rrd", "-t", "standby", "N:$standby");
+	$ERROR = RRDs::error;
+	print "Error in RRD::update for hddshutdown-".$array[$#array].": $ERROR\n" if $ERROR;
+
+	if ( ! -e "$mainsettings{'RRDLOG'}/hddtemp-".$array[$#array].".rrd"){
+		# database did not exist -> create
+		RRDs::create ("$mainsettings{'RRDLOG'}/hddtemp-".$array[$#array].".rrd", "--step=300",
+		"DS:temperature:GAUGE:600:0:100",
+		"RRA:AVERAGE:0.5:1:576",
+		"RRA:AVERAGE:0.5:6:672",
+		"RRA:AVERAGE:0.5:24:732",
+		"RRA:AVERAGE:0.5:144:1460");
+		$ERROR = RRDs::error;
+		print "Error in RRD::create for hdd-".$array[$#array].": $ERROR\n" if $ERROR;
+		}
+
+	# Temperaturlesen w�rde die Platte aufwecken!!!
+	if (!$standby){
+		$temp = 0;
+		my $smart_output = '';
+		system("$path_smartctl -iHA /dev/$disk > /var/run/smartctl_out_hddtemp-$disk");
+		if ( -e "/var/run/smartctl_out_hddtemp-".$array[$#array] ){
+			my $hdd_nvme = `grep "NVMe Log" /var/run/smartctl_out_hddtemp-$array[$#array]`;
+			if ( $hdd_nvme !~/NVMe Log/ ) {
+				my $hdd_output = `cat /var/run/smartctl_out_hddtemp-$array[$#array] | grep Temperature_`;
+				my @t = split(/\s+/,$hdd_output);
+				$temp = $t[9];
+			} else {
+				my $hdd_output = `cat /var/run/smartctl_out_hddtemp-$array[$#array] | grep Temperature:`;
+				my @t = split(/\s+/,$hdd_output);
+				$temp = $t[1];
+			}
+		} else { $temp = 0; }
+		print "Temperature for ".$array[$#array]."->".$temp."<-\n";
+		# Nur ins RDD wenn nicht 0 (sonst klappt die min Anzeige nicht)
+		if ($temp){
+			RRDs::update ("$mainsettings{'RRDLOG'}/hddtemp-".$array[$#array].".rrd", "-t", "temperature", "N:$temp");
+			$ERROR = RRDs::error;
+			print "Error in RRD::update for hdd-".$array[$#array].": $ERROR\n" if $ERROR;
+		}
+	}
+}
+
+## Update vnstat
+system ('/usr/bin/vnstat -u');
+
+my @disks = `ls -1 /sys/block | grep -E '^sd|^nvme|^mmcblk|^xvd|^vd|^md' | sort | uniq`;
+system("unlink /var/run/hddstatus 2>/dev/null && touch /var/run/hddstatus");
+foreach (@disks){
+	my $disk = $_;
+	chomp $disk;
+	print "Working on disk ".$disk.".\n";
+
+	my $status = "";
+	my $diskstats = "";
+	my $newdiskstats = "";
+	my @array = split(/\//,$disk);
+
+	$diskstats = `cat /var/run/hddstats-$array[$#array] 2>/dev/null`;
+	chomp $diskstats;
+	my $newdiskstats = `/usr/bin/iostat -d -t $disk | tail -2 | head -1 | awk '{ print \$5","\$6}'`;
+	chomp $newdiskstats;
+	my $status = `hdparm -C /dev/$disk | tail -1 | cut -d: -f2`;
+	chomp $status;
+
+	if ($status !~/standby/ || $diskstats ne $newdiskstats){
+		if (-e "/var/run/hddshutdown-".$array[$#array]){system("unlink /var/run/hddshutdown-".$array[$#array]." 2>/dev/null");}
+	}
+
+	if (-e "/var/run/hddshutdown-".$array[$#array]){$status = " standby\n";}
+	else{$status = " active\n";}
+
+	open(DATEI, ">>/var/run/hddstatus") || die "Datei nicht gefunden";
+	print DATEI $disk."-".$status;
+	close(DATEI);
+
+	updatehdddata($disk);
+}

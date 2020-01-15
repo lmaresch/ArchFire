@@ -1,0 +1,75 @@
+#!/usr/bin/perl
+###############################################################################
+#                                                                             #
+# IPFire.org - A linux based firewall                                         #
+# Copyright (C) 2007-2011  IPFire Team  <info@ipfire.org>                     #
+#                                                                             #
+# This program is free software: you can redistribute it and/or modify        #
+# it under the terms of the GNU General Public License as published by        #
+# the Free Software Foundation, either version 3 of the License, or           #
+# (at your option) any later version.                                         #
+#                                                                             #
+# This program is distributed in the hope that it will be useful,             #
+# but WITHOUT ANY WARRANTY; without even the implied warranty of              #
+# MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the               #
+# GNU General Public License for more details.                                #
+#                                                                             #
+# You should have received a copy of the GNU General Public License           #
+# along with this program.  If not, see <http://www.gnu.org/licenses/>.       #
+#                                                                             #
+###############################################################################
+#
+# IPFire HDD Shutdown state reader
+#
+
+# Also devices that cannot shutdown must be here for mediagraphs.
+my @devices = `ls -1 /sys/block | grep -E '^sd|^xvd|^vd|^md' | sort | uniq`;
+my $diskstats = "";
+my $newdiskstats = "";
+my $debug = 1;
+my $status = "";
+
+if ($debug){print "### Searching for available Disks ###\n";}
+
+foreach (@devices){
+    chomp $_;
+    my @array = split(/\//,$_);
+    $diskstats = `cat /var/run/hddstats-$array[$#array] 2>/dev/null`;
+    chomp $diskstats;
+    $newdiskstats = `iostat -d -t $_ | tail -2 | head -1 | awk '{ print \$5","\$6}'`;
+    chomp $newdiskstats;
+    $status = `hdparm -C /dev/$_ | tail -1 | cut -d: -f2`;
+    chomp $status;
+
+    if ($debug){print "Device ".$_." IDE Power status:".$status."\n";}
+    if (-e "/var/run/hddshutdown-$array[$#array]" && $status !~/standby/)
+    {
+	if ($debug){print "Remove wrong standby marking\n";}
+	if ( -e "/var/run/hddshutdown-$array[$#array]" ) { system("unlink /var/run/hddshutdown-$array[$#array]"); } 
+    }
+
+    if ($debug){print "Device ".$_." has ".$newdiskstats." write and read Requests, was ".$diskstats." at last run.\n";}
+    if ($diskstats eq $newdiskstats && (! -e "/var/run/hddshutdown-$array[$#array]") )
+    {
+	if ($debug){print "Setting Device ".$_." to standby ... ";}
+	$status = `hdparm -y /dev/$_ 2>&1`;
+	chomp $status;
+	if ($status !~/Invalid/) 
+	{  
+    	    if ($debug){print "OK\n";}
+	    system("touch /var/run/hddshutdown-$array[$#array]");
+	}
+	else
+	{
+	    if ($debug){print "FAIL\n";}
+	}
+    }
+    if ($diskstats ne $newdiskstats)
+    {
+	if ($debug){print "Device ".$_." is active.\n";}
+	if ( -e "/var/run/hddshutdown-$array[$#array]" ) { system("unlink /var/run/hddshutdown-$array[$#array]"); }
+    }
+    system("echo $newdiskstats > /var/run/hddstats-$array[$#array]");
+}
+
+# end

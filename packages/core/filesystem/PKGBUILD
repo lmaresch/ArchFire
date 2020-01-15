@@ -1,0 +1,138 @@
+# Maintainer: Sébastien Luttringer
+# Contributor: Tom Gundersen <teg@jklm.no>
+
+pkgname=archfire-filesystem
+pkgver=2020.01
+pkgrel=1
+pkgdesc='Base ArchFire Linux files'
+arch=('x86_64')
+license=('GPL')
+url='https://www.archlinux.org'
+groups=('base')
+backup=('etc/crypttab' 'etc/fstab' 'etc/group' 'etc/gshadow' 'etc/host.conf'
+        'etc/hosts' 'etc/issue' 'etc/ld.so.conf' 'etc/motd' 'etc/nsswitch.conf'
+        'etc/passwd' 'etc/profile' 'etc/resolv.conf' 'etc/securetty'
+        'etc/shadow' 'etc/shells')
+source=('bashrc' 'certparams' 'e2fsck.conf' 'group' 'hddtemp.db' 'host.conf' 'inittab'
+        'inputrc' 'ipsec.user.conf' 'ipsec.user.secrets' 'ld.so.conf' 'logrotate.conf' 'mime.types'
+        'modules.conf' 'nsswitch.conf' 'passwd' 'profile' 'resolv.conf' 'securetty' 'sysctl-x86_64.conf'
+        'sysctl.conf' 'syslog.conf' 'modprobe.d/btmrvl_sdio.conf' 'modprobe.d/cfg80211.conf'
+        'modprobe.d/nf_conntrack.conf' 'modprobe.d/pcspeaker.conf' 'lib/firmware/brcm/brcmfmac43362-sdio.txt'
+        'profile.d/colorls.sh' 'profile.d/extrapaths.sh' 'profile.d/glib2-locale.sh' 'profile.d/i18n.sh' 
+        'profile.d/lang.sh' 'profile.d/readline.sh' 'profile.d/term256.sh' 'profile.d/umask.sh'
+        'root/dot_bash_logout' 'root/dot_bash_profile' 'root/dot_bashrc' 'usr/bin/captive-cleanup' 'usr/bin/ovpn-ccd-convert'
+        'usr/bin/ovpn-collectd-convert' )
+sha512sums=('4a3f592bc30eee453cf21fc7e6837dea127375ef021015fbd968dc0771b5d82a0fcb3f1d743cd3358b95aa4ab047dc9bb041f3c23dbdc37a49d4715def8eeb0d'
+            '78cba6f51b907d819fa995dd7d32242f578bbf68a40a3f219399ed84f1b368f54272f09ecd27da50f5561dce18d2e553633d844b3949546817a622cdac326a97'
+            'e07e20bbcc33b6ee999711a2fd3faddb714a4361d64ce9764d6175306c51a49e02d2eee0b495443740c1aef410884af459d7a3eac4c408154735fcd5eb93e680'
+            '710b4043d7d2139b4001b622b358fc597d89fdb354a188219dee06248d7a947c9ba4284f45b2af11246c2af6b6a2c2bea8b784500421fd6c147503348ed52878'
+            '097174f8fb0a7c089a28404d9708fcd4ff7e8dfb820b9cbc11680df9f8415e93eba49a9df0b0ba085d1b7178935687567c8bdd91eb1ce590c0a56fe8b84cc71d'
+            '172a99d4a9902ac024377d9b7122d574de7cd9e8a93da7b6e56d8ce6c26fcf4062744c5c029774a9affed8ee89f818e2dcd1ac1c4cd425dedfef8803696927dc'
+            'eaa41af3cdab6da15dfc4b092f706852267c201e05321cfe6261d4cfd4f34224b8912ed77c008acd3b20af1412b3d78ee765a37ebcaf9f3b08d0e4f2e1cb10c0'
+            '9f6875cc8ba27874d27a21c8303547133db2ccd9138decd7cc9f1c09bf7e505efea1e871f36b8ae871082caf1c4fd79db6deaaec8ed40c6eebc5a8244d516a7a'
+            'f8f267434a6e9cab3f37d720a32e129a65f6727d3996573bbfc55017ccbaf37cfaa9835d7f108040ff48c1d1f7528dc192630ff8af0a346ebb16968dd56b0071'
+            '90d2ad03ec7101d87b861cbf7dcd706546c9bf330202f3ebaafdfb557fec4708d991b4fe11f71014fd7cdd4519dc91ba97ba97767581d891acee4e7455a88f99'
+            'bccf7eb2dee248068608bbb2afab4b017cfe69d3d87bb6d0244630746192c0cf10b32a5cc8d5bcdea71e64e0fab2cec8ba3870b58f7ede749991ce75fd05426e'
+            '3d0b4b51420506ecb575846e9af1230511bd64a271fe711906b00ff1228ac9945f2c0a2e263d4f7ce16df94bc0313bd660a5acff03405736c98d646abf8aadc0'
+            '74c90942942f820cab0b35ccd60479896f62b4fd52ce8e94ee6bbfc37d2f763c05a498968f290d3535b44123696a43ca86e031df46ae132f5a67167b15dfd9bf'
+            'eecc6f1a231b2a45b20ba42bef747111fd5eb7d3dab7cb0f0d2567dea13098f1675371a35d1171f63860df6701736f3a5fd3540d7cbe76b29f22772150fc7a37'
+            'fa0cb97758c2127b2b7d775bdba3e076f7b4682bad9a0cf59603c9c99135ffe8ddbdac813c1c199e5acb0e9cbccc1ab7ddb7ed5e9b8e0af44033f942de33aba7'
+            'e152b60f5fa34a93a6c51b122352d92c506ecea2992c5a57df50c99ce001679de9a7041037aa766fd98fa246742f82958f250e3de6150c27da90f4af64473ac9'
+            '88dfccf01492a649aead7f544985873b9d223671418c1fafdc1aeb06fa6109643b76d71cf5c533bed547e4366e8e21d103300b5ae40da1fa7b7940f41b125b2c'
+            'ea3e4d4caf3320473a68dd3cb66bbbd4186765c1b1b58da811b6a348294d97be224aa69fa8b79aa02bcb80cca2412f50a1a2fd6645e4cb9fed2712522bc8c290'
+            '2d979764adf6f74d8fc6f59b2a8ebbdf1048727cf1331f70702dc1dccdca36acf784dec19463859be0041e085a9182d7648ca84e44418090439782a70ae34429'
+            '72b57914792bf271d6e0f052a1417c8ce90ed2036defdff8f2b45d6a3b1680291a32d9cc8be68d9a3652ac8925ce22d7bb582472dec69a8ebd0ac7ab7c151d7c'
+            'e81d22ab83a0470ee2deb3fc9f282d090b36a3825e655d2db351fb42a4f03579aa500d538b5e954b4910bbaef0d177f9cb5725f3778e33a91978a1e7ebe95912'
+            '36e7d6bd6df17e49a3cd6f171133f5578a343b26ab81d5a41333dddc1cce44da2816efa626e6391b5d3af3f5438fc851f3fb06eb70ffe5b32e5fead7af7b51a5'
+            '6bab8f93cd6dd2bb6418d8b49f86fe0afbf2c0879af15b0bd4ccde740b668fa423e707abaa9f2656ace436df337bedd7d78c10d478dcf682ec38d6d93ae4bf34'
+            'd9028b466a77cd0606a61716377699a2ddb1f4bb7da603c45be983d63ed69707e7db483188ad5a80e3289387653b03e3cc2478860c92e3f948dbf6e1b05e8073'
+            'cecd38413e5da9205b235c17c35890e69f7c3c9500d71f193b93966a6842d25baaf98a4b46257ac5e7679e01b004e07d1963233a34e2e285ea014f2650cec5ac'
+            '4b1019941ce976b72ab089c44f7cc84e7552bd561ada0024e79e9420cca7e91be78028c2f54bd8c9423517139e7d4f4715e49b5061de6db6d11797e1ed9b8658'
+            '3ca814a076b44e9dfed3abaf8fe46d0a1a41d13b6b0e20014dc387f8fce2a75dfc671ba77f900f40d5a2d5d317e0ee09d082060f7829bbb93d8fe8f81db23af7'
+            '617a0bb885b6fa86af584d3f833dc334e7e0b5d4be8cce870833d83467ee166bbd267b0b24d5149bf7f4bf4d1fe1b7859a75b82e67788153a48358a6c62d2df6'
+            'd1f007186d9d9d81f9b2f96d989f2ee1e3bfc15ce3ccf512c2a448cb4ecb087f7e8fb9a4bcb15a1bafa2df0cc51a405e1d00c4a9a38ba931313644f677883da1'
+            '4a8bed2bb956741decbf3bef9b476be9795679ef57a18172618d3466052e00dbe55625c19df6c7bc38bb84e54e97f226be1aebd9048fe3b9d87db6368c66a118'
+            '8f0134d4d42d6df689397b330e2a9034c7972087a7ccd87281fa66bab1bae3ee2da95564768e48f8c3c434659269abe3ec8a2c00d560677ce173d7b04b9f42a9'
+            '65ecaa6c39b88c8c0d855070a5bd53deef009cd7c6330f2ab38746e2785751de7b184050c0b5f6244d5630ddc063cd4df31580f3a6eea558eb82b0c90a01c8ec'
+            'ea865104b40037f7ba9b9e57834957322f5f614c4133a8ad0a2860a90bc5537d6d6053469ee519afa74309040023fa9fb5aabfde6387d0cc517bb91d721b22f2'
+            'aaa9de3772b65e2d5a02ae783baf21965fd2559b5160b75ae4e11c159cceeaefe12a95efecf1197744ac4d9b53b05c98ceae9ad1c886777e1a349398ca723f2b'
+            '31119c20c6a6e4867ad9cd534ffe8a613b7bcd7ee8402a5b02aee6860a20b8a6ec02e835dd0d862075681407d4ae3566319359d2b9ccd89b1f817dca948aef42'
+            '35a7f1bb48d582d257f592d4e31e1ac233db1336841da727319410c5768d5e1f2ba6f3c0124a3272d1458c49bb6c651acc2a4518907adde9c111b1fdf495526b'
+            'c8ffbdb3d2016b880e5385778999d8b60a4120f2b4c116ed9ac9e1264caabccc90dba0c1adb2e2828777971955728859a28add48bbf7d6a2b6f19cc3370836fe'
+            'fa7e695336ff266540e54b9548e3f596a2848fbe543b44cb51408f4ddc4e42ad2c086689c919e389a5858ceb44e8711788a159463924f77d8a8deb00a6384f35'
+            '2ae17b77c461b6c0f5f7754e1269c36cd5f5ea710520210826383a6ed0c50d32854b59a1b9ef9d0fd486834498e2e378d0f93502131db44d427fc5ce208b28dc'
+            'bd0aa7415c7dbaeafc798953c830c1c5fbf4fd54ca29c64961ac9e7747014708854cc1f36b6156c66eb5f29d11e50ab7688aa867a6ccfa988782e35520f8c333'
+            '0ca05d257e7a8964079d7087a3fd00057d29906678f9f31ece6ca07dff80ee58c32742ac986e0c357275bdc6199b6b4f5c66de890be8f116de6b7c609dd5826c')
+
+package() {
+  cd "$pkgdir"
+
+  # setup root filesystem
+  for d in bin boot etc/opt etc/modprobe.d home lib/firmware/brcm mnt opt run media/floppy media/cdrom media/usbkey sbin srv var; do
+    install -d -m755 $d
+  done
+  for d1 in usr usr/local; do
+    for d2 in bin include lib/sse2 sbin share src; do
+      install -d -m755 $d1/$d2
+    done
+    for d2 in doc info locale man misc terminfo xt_geoip zoneinfo; do
+      install -d -m755 $d1/share/$d2
+    done
+    for d2 in {1..8}; do
+      install -d -m755 $d1/share/man/man$d2
+  done
+  for d in proc sys; do
+    install -d -m555 $d
+  done
+  install -d -m0750 root
+  for d in tmp var/tmp; do
+    install -d -m1777 $d
+  done
+
+  # Bash startup files
+  install -d -m755 --owner=root --group=root etc/profile.d
+  for f in ../etc/profile.d/*; do
+    install -m755 --owner=root --group=root $f etc/profile.d
+  done
+  chmod 755 etc/bashrc
+
+  # Install root's bash files.
+  for f in ../root/dot_*; do
+    install -m500 --owner=root --group=root -T $f root/`basename ${f/dot_/\.}`
+  done
+
+  # Install scripts
+  for f in ../usr/local/bin/*; do
+    install -m755 --owner=root --group=root $f usr/local/bin
+  done
+  for f in ../usr/bin/*; do
+    install -m755 --owner=root --group=root $f usr/bin
+  done
+
+  # Install firewall scripts.
+  install -d -m755 usr/lib/firewall
+  install -m755 ../usr/lib/firewall/rules.pl usr/lib/firewall
+  install -m644 ../usr/lib/firewall/firewall-lib.pl usr/lib/firewall
+  install -m755 ../usr/lib/firewall/ipsec-policy usr/lib/firewall
+
+  # add lib symlinks
+  ln -s usr/lib lib
+  [[ $CARCH = 'x86_64' ]] && {
+    ln -svf lib lib64
+    ln -svf lib usr/lib64
+  }
+
+  # setup /var
+  for d in lock log mail spool empty opt cache lib/misc lib/locate local log/counter log/calamaris; do
+    install -d -m755 var/$d
+  done
+  chown nobody.nobody /var/log/calamaris
+	touch /var/log/{btmp,lastlog,wtmp}
+	chmod -v 600 /var/log/btmp
+	chgrp -v utmp /var/log/lastlog
+	chmod -v 664 /var/log/lastlog
+  chmod 0711 /var/empty
+
+}
+
+# vim:set ts=2 sw=2 et:
