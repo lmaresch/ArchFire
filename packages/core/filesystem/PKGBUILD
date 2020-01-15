@@ -16,12 +16,15 @@ backup=('etc/crypttab' 'etc/fstab' 'etc/group' 'etc/gshadow' 'etc/host.conf'
 source=('bashrc' 'certparams' 'e2fsck.conf' 'group' 'hddtemp.db' 'host.conf' 'inittab'
         'inputrc' 'ipsec.user.conf' 'ipsec.user.secrets' 'ld.so.conf' 'logrotate.conf' 'mime.types'
         'modules.conf' 'nsswitch.conf' 'passwd' 'profile' 'resolv.conf' 'securetty' 'sysctl-x86_64.conf'
-        'sysctl.conf' 'syslog.conf' 'modprobe.d/btmrvl_sdio.conf' 'modprobe.d/cfg80211.conf'
-        'modprobe.d/nf_conntrack.conf' 'modprobe.d/pcspeaker.conf' 'lib/firmware/brcm/brcmfmac43362-sdio.txt'
-        'profile.d/colorls.sh' 'profile.d/extrapaths.sh' 'profile.d/glib2-locale.sh' 'profile.d/i18n.sh' 
-        'profile.d/lang.sh' 'profile.d/readline.sh' 'profile.d/term256.sh' 'profile.d/umask.sh'
-        'root/dot_bash_logout' 'root/dot_bash_profile' 'root/dot_bashrc' 'usr/bin/captive-cleanup' 'usr/bin/ovpn-ccd-convert'
-        'usr/bin/ovpn-collectd-convert' )
+        'sysctl.conf' 'syslog.conf' 'btmrvl_sdio.conf' 'cfg80211.conf'
+        'nf_conntrack.conf' 'pcspeaker.conf' 'brcmfmac43362-sdio.txt'
+        'colorls.sh' 'extrapaths.sh' 'glib2-locale.sh' 'i18n.sh' 
+        'lang.sh' 'readline.sh' 'term256.sh' 'umask.sh'
+        'dot_bash_logout' 'dot_bash_profile' 'dot_bashrc' 'captive-cleanup' 'ovpn-ccd-convert'
+        'ovpn-collectd-convert' 'archive.files' 'backupiso' 'connscheduler' 'consort.sh' 
+        'convert-dns-settings' 'convert-ovpn' 'filesystem-cleanup' 'hddshutdown' 'ipsec-interfaces' 
+        'makegraphs' 'qosd' 'readhash' 'rebuild-initrd' 'run-parts' 'scanhd' 'settime' 'timecheck' 
+        'timezone-transition' 'update-ids-ruleset' 'update-lang-cache' 'update-location-database')
 sha512sums=('4a3f592bc30eee453cf21fc7e6837dea127375ef021015fbd968dc0771b5d82a0fcb3f1d743cd3358b95aa4ab047dc9bb041f3c23dbdc37a49d4715def8eeb0d'
             '78cba6f51b907d819fa995dd7d32242f578bbf68a40a3f219399ed84f1b368f54272f09ecd27da50f5561dce18d2e553633d844b3949546817a622cdac326a97'
             'e07e20bbcc33b6ee999711a2fd3faddb714a4361d64ce9764d6175306c51a49e02d2eee0b495443740c1aef410884af459d7a3eac4c408154735fcd5eb93e680'
@@ -41,8 +44,8 @@ sha512sums=('4a3f592bc30eee453cf21fc7e6837dea127375ef021015fbd968dc0771b5d82a0fc
             '88dfccf01492a649aead7f544985873b9d223671418c1fafdc1aeb06fa6109643b76d71cf5c533bed547e4366e8e21d103300b5ae40da1fa7b7940f41b125b2c'
             'ea3e4d4caf3320473a68dd3cb66bbbd4186765c1b1b58da811b6a348294d97be224aa69fa8b79aa02bcb80cca2412f50a1a2fd6645e4cb9fed2712522bc8c290'
             '2d979764adf6f74d8fc6f59b2a8ebbdf1048727cf1331f70702dc1dccdca36acf784dec19463859be0041e085a9182d7648ca84e44418090439782a70ae34429'
-            '72b57914792bf271d6e0f052a1417c8ce90ed2036defdff8f2b45d6a3b1680291a32d9cc8be68d9a3652ac8925ce22d7bb582472dec69a8ebd0ac7ab7c151d7c'
             'e81d22ab83a0470ee2deb3fc9f282d090b36a3825e655d2db351fb42a4f03579aa500d538b5e954b4910bbaef0d177f9cb5725f3778e33a91978a1e7ebe95912'
+            '72b57914792bf271d6e0f052a1417c8ce90ed2036defdff8f2b45d6a3b1680291a32d9cc8be68d9a3652ac8925ce22d7bb582472dec69a8ebd0ac7ab7c151d7c'
             '36e7d6bd6df17e49a3cd6f171133f5578a343b26ab81d5a41333dddc1cce44da2816efa626e6391b5d3af3f5438fc851f3fb06eb70ffe5b32e5fead7af7b51a5'
             '6bab8f93cd6dd2bb6418d8b49f86fe0afbf2c0879af15b0bd4ccde740b668fa423e707abaa9f2656ace436df337bedd7d78c10d478dcf682ec38d6d93ae4bf34'
             'd9028b466a77cd0606a61716377699a2ddb1f4bb7da603c45be983d63ed69707e7db483188ad5a80e3289387653b03e3cc2478860c92e3f948dbf6e1b05e8073'
@@ -62,7 +65,28 @@ sha512sums=('4a3f592bc30eee453cf21fc7e6837dea127375ef021015fbd968dc0771b5d82a0fc
             'fa7e695336ff266540e54b9548e3f596a2848fbe543b44cb51408f4ddc4e42ad2c086689c919e389a5858ceb44e8711788a159463924f77d8a8deb00a6384f35'
             '2ae17b77c461b6c0f5f7754e1269c36cd5f5ea710520210826383a6ed0c50d32854b59a1b9ef9d0fd486834498e2e378d0f93502131db44d427fc5ce208b28dc'
             'bd0aa7415c7dbaeafc798953c830c1c5fbf4fd54ca29c64961ac9e7747014708854cc1f36b6156c66eb5f29d11e50ab7688aa867a6ccfa988782e35520f8c333'
-            '0ca05d257e7a8964079d7087a3fd00057d29906678f9f31ece6ca07dff80ee58c32742ac986e0c357275bdc6199b6b4f5c66de890be8f116de6b7c609dd5826c')
+            '0ca05d257e7a8964079d7087a3fd00057d29906678f9f31ece6ca07dff80ee58c32742ac986e0c357275bdc6199b6b4f5c66de890be8f116de6b7c609dd5826c'
+            'c8ea835ea5df7df901ca9842c5759b134f0a248d13580bd94fb98c30f93c4ea2f24a0bde60315231f103d0eb8707a81ee6f7d082f910c407d5ce64ebc431b03c'
+            '0a1acbef1073bc1b8b9e306bbe51f72c899e08709c0652260ca33746ef855018227e3b3352e2b2329343f6e90b4b9de34207312d9beda7ec4a32f95afbed7dce'
+            '34db9d4273daf255a513c998b1bfcec28d5265de6102fec52245b38f1e421a83ce7444bb7b8a74fc3fd5dd3baa7e31f30fe6fa7576ba1c177e05d917b5d59596'
+            '0f5b7e0e6c67b3bca0986a6028e8b5880e1507cda32f1c3ffffa14668439782365cf7bb36b7b1aa5230e10583ed8bc5ca446efbe91170b9b77cd0d1f57fef720'
+            '10857ce3d921a646d2014581da6ba7fd6cdd6f7799ff3adec728635c35ff6bf499df0352e68c7cb862acb3bde09c5006fe60b76102a385c69b391cf1e213663b'
+            '1117dc076e5130711e0ec3b5dae4e950afcfa2fb163bb025ce88fae38e04aeb6f8c614f6eb05f4fe2bebc498918534eee47717f6763811dae9cfd41b48b059b2'
+            'af59c9c2840fb11fd3297f7ccb3eb0c035302cd055c7ff4a103a6cab6b2a3585961a50570665f408e2d2f1353d6ca33d015965057ad0621237c6dc9dca2c885e'
+            'ad37685d80988a506e518dfb0fe20a376894fde11bafd5b1f64e929e152fbd1c71444676a6138adc63f328aca8da7e5cefd3d996103d0b2ed7c8ef48e19f393d'
+            '40c8895f6fd37fd8a771842bed909d13258cbd8a6af10335dbaf7fec00fe96287b479bf2df974ed63a9bb96217276225a32d455e5a4b074d7a0b0087871d7c63'
+            'e93f0e9021459075b0f4ccf7c9222d93775f68cd53499d41b7b01b10083bce080fab7075c6a295556c74864cbe2d2739b296546919cce6e0813d0a670850a70e'
+            '18e05a8175947b56163b3a6fab90c937455e814298d21760440a6937161a163797214e7f755c41a62956da106c860c3a00db9a402eb331c5c9e969946d3a923b'
+            '33b663a2085649b652d44ab8a7d250b2c7f9f64b33cee5a65a25c7f1165ac66898221b01fee17d206ebc6c6c832269deea264e3f922c18b65f691ff942c5c4d3'
+            '8e1dd5b2f887683d5981a985b7c8b50f2a002d4fcbe200cac7bb83b135d7754c23538d35c381044cb4be9e173927088d4692e657f43800b10f54d2ef2e500094'
+            'a81ea844f1cdc113c6dc4543b341effb839af21183ac1ea4f1f95e1b1a9c838dbc8702dbd81ce84f4d5ae9bd981a82ef60a9d1b4c16883a37106b9c4006a7f32'
+            '5ff51977157a7298be8348cb15da658605a408aa497a4900135ea2f04df7f96417aed3e2eb297bf248198059d774fae523a96cce36719dad4d01c868817c2181'
+            '268d82259006ed22bdadc5f1cdf9f3638f11c6f386061108ffe067fa7fef779fd39e97b587ba73bcd55d32bc99dac758afe6ac364dbef7710cce237fc46e1c54'
+            '7a2a51e4576bcff96e885f4cb31124f0bb6507fb9fa4e234e90d260ace8be17142cdaa15e5701875c92f1de9a0eabf168a60312a197d6f6ce4053e42724384e5'
+            '74152468b6a09e26b1be131bfed753026cbcb42d2afb1ef6977463006f09bea4b0609954748f517d2296e6e7f8a91897d1c46a1fa359db1031e0119b24b863e2'
+            'c68118a0ce34ee808cdaf1ce1dc3790877890d9f6af1545faebd03f7cf37c4b4c9ca0ed780d48de8e0edc04abc605ac6c2a12e6248be02ce7dbacd2eb2ab5b7e'
+            'cd96cf9f4643ecd4ae0f81560efd81162246f268bfcf01866b976db358138011abdc929344f0a0c522e4f9507bd53bfe02f28f06981568052068a7c831ad3287'
+            'ee52b2e9c109b5e4ce84ebd8954a7d5225e1ceff424fbf55df58f4ac46c86e36994d5f03552998d7c5683f0083ffe4fb44d8615d919fb480e899d0fd889c2f78')
 
 package() {
   cd "$pkgdir"
@@ -80,6 +104,7 @@ package() {
     done
     for d2 in {1..8}; do
       install -d -m755 $d1/share/man/man$d2
+    done
   done
   for d in proc sys; do
     install -d -m555 $d
@@ -89,31 +114,31 @@ package() {
     install -d -m1777 $d
   done
 
-  # Bash startup files
-  install -d -m755 --owner=root --group=root etc/profile.d
-  for f in ../etc/profile.d/*; do
-    install -m755 --owner=root --group=root $f etc/profile.d
+  # Install config files
+  for f in bashrc certparams e2fsck.conf group hddtemp.db host.conf inittab inputrc ipsec.user.conf ipsec.user.secrets ld.so.conf logrotate.conf mime.types \
+        modules.conf nsswitch.conf passwd profile resolv.conf securetty sysctl-x86_64.conf sysctl.conf syslog.conf; do
+    install -m755 --owner=root --group=root $f /etc
+  done
+  for f in etc/modprobe.d/cfg80211.conf nf_conntrack.conf pcspeaker.conf; do
+    install -m755 --owner=root --group=root $f /etc/modprobe.d
+  done
+  install -m755 --owner=root --group=root brcmfmac43362-sdio.txt lib/firmware/brcm
+  for f in colorls.sh extrapaths.sh glib2-locale.sh i18n.sh lang.sh readline.sh term256.sh umask.sh; do
+    install -m755 --owner=root --group=root $f /etc/profile.d
+  done
+  for f in dot_bash_logout dot_bash_profile dot_bashrc; do
+    install -m700 --owner=root --group=root -T $f /root/`basename ${f/dot_/\./}`
+  done
+  for f in captive-cleanup ovpn-ccd-convert ovpn-collectd-convert; do
+    install -m755 --owner=root --group=root $f usr/bin
   done
   chmod 755 etc/bashrc
 
-  # Install root's bash files.
-  for f in ../root/dot_*; do
-    install -m500 --owner=root --group=root -T $f root/`basename ${f/dot_/\.}`
-  done
-
-  # Install scripts
-  for f in ../usr/local/bin/*; do
-    install -m755 --owner=root --group=root $f usr/local/bin
-  done
-  for f in ../usr/bin/*; do
-    install -m755 --owner=root --group=root $f usr/bin
-  done
-
   # Install firewall scripts.
   install -d -m755 usr/lib/firewall
-  install -m755 ../usr/lib/firewall/rules.pl usr/lib/firewall
-  install -m644 ../usr/lib/firewall/firewall-lib.pl usr/lib/firewall
-  install -m755 ../usr/lib/firewall/ipsec-policy usr/lib/firewall
+  install -m755 usr/lib/firewall/rules.pl usr/lib/firewall
+  install -m644 usr/lib/firewall/firewall-lib.pl usr/lib/firewall
+  install -m755 usr/lib/firewall/ipsec-policy usr/lib/firewall
 
   # add lib symlinks
   ln -s usr/lib lib
