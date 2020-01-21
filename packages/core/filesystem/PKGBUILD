@@ -24,7 +24,8 @@ source=('bashrc' 'certparams' 'e2fsck.conf' 'group' 'hddtemp.db' 'host.conf' 'in
         'ovpn-collectd-convert' 'archive.files' 'backupiso' 'connscheduler' 'consort.sh' 
         'convert-dns-settings' 'convert-ovpn' 'filesystem-cleanup' 'hddshutdown' 'ipsec-interfaces' 
         'makegraphs' 'qosd' 'readhash' 'rebuild-initrd' 'run-parts' 'scanhd' 'settime' 'timecheck' 
-        'timezone-transition' 'update-ids-ruleset' 'update-lang-cache' 'update-location-database')
+        'timezone-transition' 'update-ids-ruleset' 'update-lang-cache' 'update-location-database'
+        'firewall-lib.pl' 'rules.pl' 'ipsec-policy')
 sha512sums=('4a3f592bc30eee453cf21fc7e6837dea127375ef021015fbd968dc0771b5d82a0fcb3f1d743cd3358b95aa4ab047dc9bb041f3c23dbdc37a49d4715def8eeb0d'
             '78cba6f51b907d819fa995dd7d32242f578bbf68a40a3f219399ed84f1b368f54272f09ecd27da50f5561dce18d2e553633d844b3949546817a622cdac326a97'
             'e07e20bbcc33b6ee999711a2fd3faddb714a4361d64ce9764d6175306c51a49e02d2eee0b495443740c1aef410884af459d7a3eac4c408154735fcd5eb93e680'
@@ -86,7 +87,10 @@ sha512sums=('4a3f592bc30eee453cf21fc7e6837dea127375ef021015fbd968dc0771b5d82a0fc
             '74152468b6a09e26b1be131bfed753026cbcb42d2afb1ef6977463006f09bea4b0609954748f517d2296e6e7f8a91897d1c46a1fa359db1031e0119b24b863e2'
             'c68118a0ce34ee808cdaf1ce1dc3790877890d9f6af1545faebd03f7cf37c4b4c9ca0ed780d48de8e0edc04abc605ac6c2a12e6248be02ce7dbacd2eb2ab5b7e'
             'cd96cf9f4643ecd4ae0f81560efd81162246f268bfcf01866b976db358138011abdc929344f0a0c522e4f9507bd53bfe02f28f06981568052068a7c831ad3287'
-            'ee52b2e9c109b5e4ce84ebd8954a7d5225e1ceff424fbf55df58f4ac46c86e36994d5f03552998d7c5683f0083ffe4fb44d8615d919fb480e899d0fd889c2f78')
+            'ee52b2e9c109b5e4ce84ebd8954a7d5225e1ceff424fbf55df58f4ac46c86e36994d5f03552998d7c5683f0083ffe4fb44d8615d919fb480e899d0fd889c2f78'
+            '773e5ae11c4c07bf04ab35573ec4ed6728725efa19ba64768eae7442378807e40869d7f083ae51193255af0daee01a5a52ef438b0693537d918c6757b6f72f31'
+            'f5701d10ff4ba1c79aae6440753e8940ae09807b05bfd68c9ba704f1f696c61e6e1903d68a98fcd1a1296eb4c0cebef9513388b4aaff63d71c342926d9d86fa7'
+            '8b9cffcfe85246ddc9fdf51c8173cf964d12ad877ae2200061e1f0a0a00999934cc9ebea789e88355fe66f120570539b9ae965c5050fe5566ab9ac27f0c83279')
 
 package() {
   cd "$pkgdir"
@@ -117,28 +121,28 @@ package() {
   # Install config files
   for f in bashrc certparams e2fsck.conf group hddtemp.db host.conf inittab inputrc ipsec.user.conf ipsec.user.secrets ld.so.conf logrotate.conf mime.types \
         modules.conf nsswitch.conf passwd profile resolv.conf securetty sysctl-x86_64.conf sysctl.conf syslog.conf; do
-    install -m755 --owner=root --group=root $f /etc
+    install -m755 --owner=root --group=root $srcdir/$f etc
   done
-  for f in etc/modprobe.d/cfg80211.conf nf_conntrack.conf pcspeaker.conf; do
-    install -m755 --owner=root --group=root $f /etc/modprobe.d
+  for f in cfg80211.conf nf_conntrack.conf pcspeaker.conf; do
+    install -m755 --owner=root --group=root $srcdir/$f etc/modprobe.d
   done
-  install -m755 --owner=root --group=root brcmfmac43362-sdio.txt lib/firmware/brcm
+  install -m755 --owner=root --group=root $srcdir/brcmfmac43362-sdio.txt lib/firmware/brcm
   for f in colorls.sh extrapaths.sh glib2-locale.sh i18n.sh lang.sh readline.sh term256.sh umask.sh; do
-    install -m755 --owner=root --group=root $f /etc/profile.d
+    install -m755 --owner=root --group=root $srcdir/$f etc/profile.d
   done
   for f in dot_bash_logout dot_bash_profile dot_bashrc; do
-    install -m700 --owner=root --group=root -T $f /root/`basename ${f/dot_/\./}`
+    install -m700 --owner=root --group=root -T $srcdir/$f root/`basename ${f/dot_/\./}`
   done
   for f in captive-cleanup ovpn-ccd-convert ovpn-collectd-convert; do
-    install -m755 --owner=root --group=root $f usr/bin
+    install -m755 --owner=root --group=root $srcdir/$f usr/bin
   done
   chmod 755 etc/bashrc
 
   # Install firewall scripts.
   install -d -m755 usr/lib/firewall
-  install -m755 usr/lib/firewall/rules.pl usr/lib/firewall
-  install -m644 usr/lib/firewall/firewall-lib.pl usr/lib/firewall
-  install -m755 usr/lib/firewall/ipsec-policy usr/lib/firewall
+  install -m755 $srcdir/rules.pl usr/lib/firewall
+  install -m644 $srcdir/firewall-lib.pl usr/lib/firewall
+  install -m755 $srcdir/ipsec-policy usr/lib/firewall
 
   # add lib symlinks
   ln -s usr/lib lib
@@ -151,12 +155,12 @@ package() {
   for d in lock log mail spool empty opt cache lib/misc lib/locate local log/counter log/calamaris; do
     install -d -m755 var/$d
   done
-  chown nobody.nobody /var/log/calamaris
-	touch /var/log/{btmp,lastlog,wtmp}
-	chmod -v 600 /var/log/btmp
-	chgrp -v utmp /var/log/lastlog
-	chmod -v 664 /var/log/lastlog
-  chmod 0711 /var/empty
+  chown nobody.nobody var/log/calamaris
+	touch var/log/{btmp,lastlog,wtmp}
+	chmod -v 600 var/log/btmp
+	chgrp -v utmp var/log/lastlog
+	chmod -v 664 var/log/lastlog
+  chmod 0711 var/empty
 
 }
 
