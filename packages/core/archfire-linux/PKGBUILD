@@ -1,0 +1,241 @@
+pkgbase=archfire-linux
+pkgver=4.14.167
+pkgrel=1
+pkgdesc='Linux'
+url="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?h=v$pkgver"
+arch=(x86_64)
+license=(GPL2)
+makedepends=(
+  bc kmod libelf
+  xmlto python-sphinx python-sphinx_rtd_theme graphviz imagemagick
+  git
+)
+options=('!strip')
+_srcname=archfire-linux
+source=(
+  "$_srcname::git+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?signed#tag=v$pkgver"
+  'archfire_logo.ppm'
+  'kernel.config.x86_64-archfire'
+  'linux-2.6.32.27_mcs7830-fix-driver-name.patch'
+  'linux-3.14.79-amba-fix.patch'
+  'linux-4.14.1-igb-e1000e_fix_lock_at_update_stats.patch'
+  'linux-4.14-apu_leds.patch'
+  'linux-4.14_ath_user_regd.patch'
+  'linux-4.14-layer7.patch'
+  'linux-4.9.16-ledtrig_netdev.patch'
+  'linux-4.9.8_cs5535audio_fix_logspam_on_geos.patch'
+  'linux-4.9.8-iwlwifi-noibss_only_on_radar_chan.patch'
+  'linux-5.0-netfilter-conntrack-resolve-clash.patch'
+  'v4l-dvb_fix_tua6034_pll.patch'
+)
+sha512sums=('SKIP'
+            '36d2e36dac53f6422a6d3886caf4ca625ec2b4c33f4ab57ea538a4fd9816ead8ecd1a1f81fb2d4e88090f0d8bbfd8dfff3613111e163c1bf6f8fcbaa33eb506a'
+            '49e4a21b84d7f1145401a7dbf7f50b804bc11f649506be261b064ff55f544fb37bccf350edb55f75faae73aba0b471f4228323e01bd71572093ebddab42daa3c'
+            '16c822a8f4b15570c9ef0331fec4b1c1b2daa49e9c36db3d038ae19ded3d5b7934b566a50b6850a6385175f01705ccf5a3c18d683a54512d0ced7e9ad981e564'
+            '6fb86f395defe6b8c489db5959281a46c62edb1f5add37bce51043a73e423a3d82082ef54496c4634e3f54158bd573c49c6692d5830197ed2ec922fa971f9b1c'
+            '1c156897f46b0db5fa2cbab1098ddfc0d05ff55472af0c01b936c5737d3c952267f4de1f0ac73bdc674209c34d6e26dda35a3995646d788d71d817586f663bb3'
+            'e1ac1e008577e982ca708ab7f0ed4a89dd808545290c75eb103f656dc92fa1156aabbcad56f20628a25d9c624e71267fcf683251b6ec6c3ece960016a5917927'
+            'f6502ad7152074796744c54e3710f80786b714e470bb630b03fac934fe9a20c161b87a6ac842cc86a48fad8df36d7b965166a9a77632a4f6398e134e2b3b6950'
+            'dcdb86bed9318e8c3d37d0eb5524d2cd7134942e43f187b6673623d0aa5e3e60ed422c483e21176cff9e3a01356a20f8004e695b06369ac081418a99db6c9621'
+            'f5d0ecb94779257ffb1d9f81ec8c1c0ce8f11b27ed0049948b642bde9fedfc0dd4d264e87bb252507c0f6177bea2e527a8add7edf9fa3a75d80e28f780c31634'
+            'de0864bfa422525b21e5e6560dab0b8864721dc430b436a2839058b63d53ee92683827477d3e76f342777f5b6e453dad3405f70bce0545d99a6d5fa241f1f1eb'
+            'f7b3211e63bd60e538d5d8318638c149e3db641b449f27d4468da4a85ee9f0b84de4364266b8878267dc08134a4c9df2f1cdd0e3ab4dfadb990618beb4e716ad'
+            'ef0cfb91d424501e617fa28a28a3b9cb0b0428ea096351a6d3106eb17e36ea0eba5efe30687d6c63a1679d4d2b807d44e905050e47fab53fd258ce1122a4f4ac'
+            '7f3eec6edd7e56b32a2081ba14b5135831316508a256f90c13e5893115e862e69210f3977dcc2397eb3dcf665f9bc1c4b250b0a54103a55073be2c7a94130138'            
+            )
+
+export KBUILD_BUILD_HOST=archfire
+export KBUILD_BUILD_USER=$pkgbase
+export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
+
+prepare() {
+  cd $_srcname
+
+  echo "Setting version..."
+  scripts/setlocalversion --save-scmversion
+  echo "-$pkgrel" > localversion.10-pkgrel
+  echo "archfire" > localversion.20-pkgname
+
+  echo "Applying patches..."
+  echo "Layer7-patch"
+  patch -Np1 -i $srcdir/linux-4.14-layer7.patch
+  
+  echo "DVB patch"
+  patch -Np2 -i $srcdir/v4l-dvb_fix_tua6034_pll.patch
+
+  echo "WiFi patches"
+  patch -Np1 -i $srcdir/linux-4.14_ath_user_regd.patch
+  patch -Np1 -i $srcdir/linux-4.9.8-iwlwifi-noibss_only_on_radar_chan.patch
+
+  echo "Add LED trigger patch"
+  patch -Np1 -i $srcdir/linux-4.9.16-ledtrig_netdev.patch
+
+  echo "Fix igb and e1000e crash patch"
+  patch -Np1 -i $srcdir/linux-4.14.1-igb-e1000e_fix_lock_at_update_stats.patch
+
+  echo "cs5535audio spams syslog if no ac97 was present (geos router) patch"
+  patch -Np1 -i $srcdir/linux-4.9.8_cs5535audio_fix_logspam_on_geos.patch
+
+  echo "Add PC Engines APU led support patch"
+  patch -Np1 -i $srcdir/linux-4.14-apu_leds.patch
+
+  echo "Fix uevent PHYSDEVDRIVER patch"
+  patch -Np1 -i $srcdir/linux-2.6.32.27_mcs7830-fix-driver-name.patch
+
+  echo "Fix for netfilter nf_conntrack: resolve clash for matching conntracks patch"
+  patch -Np1 -i $srcdir/linux-5.0-netfilter-conntrack-resolve-clash.patch
+
+  echo "amba fix patch"
+  patch -Np1 -i $srcdir/linux-3.14.79-amba-fix.patch
+
+  echo "Setting config..."
+  cp $srcdir/kernel.config.x86_64-archfire .config
+  make olddefconfig
+
+  echo "Copy logo..."
+  cp $srcdir/archfire_logo.ppm drivers/video/logo/logo_linux_clut224.ppm
+
+  make -s kernelrelease > version
+  echo "Prepared %s version %s" "$pkgbase" "$(<version)"
+}
+
+build() {
+  cd $_srcname
+  make bzImage modules htmldocs
+}
+
+_package() {
+  pkgdesc="The $pkgdesc kernel and modules"
+  depends=(coreutils kmod initramfs)
+  optdepends=('crda: to set the correct wireless channels of your country'
+              'linux-firmware: firmware images needed for some devices')
+
+  cd $_srcname
+  local kernver="$(<version)"
+  local modulesdir="$pkgdir/usr/lib/modules/$kernver"
+
+  echo "Installing boot image..."
+  # systemd expects to find the kernel here to allow hibernation
+  # https://github.com/systemd/systemd/commit/edda44605f06a41fb86b7ab8128dcf99161d2344
+  install -Dm644 "$(make -s image_name)" "$modulesdir/vmlinuz"
+
+  # Used by mkinitcpio to name the kernel
+  echo "$pkgbase" | install -Dm644 /dev/stdin "$modulesdir/pkgbase"
+
+  echo "Installing modules..."
+  make INSTALL_MOD_PATH="$pkgdir/usr" modules_install
+
+  # remove build and source links
+  rm "$modulesdir"/{source,build}
+
+  echo "Fixing permissions..."
+  chmod -Rc u=rwX,go=rX "$pkgdir"
+}
+
+_package-headers() {
+  pkgdesc="Headers and scripts for building modules for the $pkgdesc kernel"
+
+  cd $_srcname
+  local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
+
+  echo "Installing build files..."
+  install -Dt "$builddir" -m644 .config Makefile Module.symvers System.map \
+    localversion.* version vmlinux
+  install -Dt "$builddir/kernel" -m644 kernel/Makefile
+  install -Dt "$builddir/arch/x86" -m644 arch/x86/Makefile
+  cp -t "$builddir" -a scripts
+
+  # add objtool for external module building and enabled VALIDATION_STACK option
+  install -Dt "$builddir/tools/objtool" tools/objtool/objtool
+
+  # add xfs and shmem for aufs building
+  mkdir -p "$builddir"/{fs/xfs,mm}
+
+  echo "Installing headers..."
+  cp -t "$builddir" -a include
+  cp -t "$builddir/arch/x86" -a arch/x86/include
+  install -Dt "$builddir/arch/x86/kernel" -m644 arch/x86/kernel/asm-offsets.s
+
+  install -Dt "$builddir/drivers/md" -m644 drivers/md/*.h
+  install -Dt "$builddir/net/mac80211" -m644 net/mac80211/*.h
+
+  # http://bugs.archlinux.org/task/13146
+  install -Dt "$builddir/drivers/media/i2c" -m644 drivers/media/i2c/msp3400-driver.h
+
+  # http://bugs.archlinux.org/task/20402
+  install -Dt "$builddir/drivers/media/usb/dvb-usb" -m644 drivers/media/usb/dvb-usb/*.h
+  install -Dt "$builddir/drivers/media/dvb-frontends" -m644 drivers/media/dvb-frontends/*.h
+  install -Dt "$builddir/drivers/media/tuners" -m644 drivers/media/tuners/*.h
+
+  echo "Installing KConfig files..."
+  find . -name 'Kconfig*' -exec install -Dm644 {} "$builddir/{}" \;
+
+  echo "Removing unneeded architectures..."
+  local arch
+  for arch in "$builddir"/arch/*/; do
+    [[ $arch = */x86/ ]] && continue
+    echo "Removing $(basename "$arch")"
+    rm -r "$arch"
+  done
+
+  echo "Removing documentation..."
+  rm -r "$builddir/Documentation"
+
+  echo "Removing broken symlinks..."
+  find -L "$builddir" -type l -printf 'Removing %P\n' -delete
+
+  echo "Removing loose objects..."
+  find "$builddir" -type f -name '*.o' -printf 'Removing %P\n' -delete
+
+  echo "Stripping build tools..."
+  local file
+  while read -rd '' file; do
+    case "$(file -bi "$file")" in
+      application/x-sharedlib\;*)      # Libraries (.so)
+        strip -v $STRIP_SHARED "$file" ;;
+      application/x-archive\;*)        # Libraries (.a)
+        strip -v $STRIP_STATIC "$file" ;;
+      application/x-executable\;*)     # Binaries
+        strip -v $STRIP_BINARIES "$file" ;;
+      application/x-pie-executable\;*) # Relocatable binaries
+        strip -v $STRIP_SHARED "$file" ;;
+    esac
+  done < <(find "$builddir" -type f -perm -u+x ! -name vmlinux -print0)
+
+  echo "Adding symlink..."
+  mkdir -p "$pkgdir/usr/src"
+  ln -sr "$builddir" "$pkgdir/usr/src/$pkgbase"
+
+  echo "Fixing permissions..."
+  chmod -Rc u=rwX,go=rX "$pkgdir"
+}
+
+_package-docs() {
+  pkgdesc="Documentation for the $pkgdesc kernel"
+
+  cd $_srcname
+  local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
+
+  echo "Installing documentation..."
+  local src dst
+  while read -rd '' src; do
+    dst="${src#Documentation/}"
+    dst="$builddir/Documentation/${dst#output/}"
+    install -Dm644 "$src" "$dst"
+  done < <(find Documentation -name '.*' -prune -o ! -type d -print0)
+
+  echo "Adding symlink..."
+  mkdir -p "$pkgdir/usr/share/doc"
+  ln -sr "$builddir/Documentation" "$pkgdir/usr/share/doc/$pkgbase"
+
+  echo "Fixing permissions..."
+  chmod -Rc u=rwX,go=rX "$pkgdir"
+}
+
+pkgname=("$pkgbase" "$pkgbase-headers" "$pkgbase-docs")
+for _p in "${pkgname[@]}"; do
+  eval "package_$_p() {
+    $(declare -f "_package${_p#$pkgbase}")
+    _package${_p#$pkgbase}
+  }"
+done
