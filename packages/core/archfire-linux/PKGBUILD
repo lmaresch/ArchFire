@@ -2,7 +2,7 @@ pkgbase=archfire-linux
 pkgver=4.14.167
 pkgrel=1
 pkgdesc='Linux'
-url="https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?h=v$pkgver"
+url="https://www.kernel.org"
 arch=(x86_64)
 license=(GPL2)
 makedepends=(
@@ -13,7 +13,7 @@ makedepends=(
 options=('!strip')
 _srcname=archfire-linux
 source=(
-  "$_srcname::git+https://git.kernel.org/pub/scm/linux/kernel/git/stable/linux.git?signed#tag=v$pkgver"
+  "https://cdn.kernel.org/pub/linux/kernel/v4.x/linux-$pkgver.tar.xz"
   'archfire_logo.ppm'
   'kernel.config.x86_64-archfire'
   'linux-2.6.32.27_mcs7830-fix-driver-name.patch'
@@ -28,7 +28,7 @@ source=(
   'linux-5.0-netfilter-conntrack-resolve-clash.patch'
   'v4l-dvb_fix_tua6034_pll.patch'
 )
-sha512sums=('SKIP'
+sha512sums=('1bb9f7bd878f075922f6b204b0f057d4d420365aedb4a2f75a6fb8bc0361d8161d37847d6428866f84ac4d5c259a2eb59b056ef67038ece6c8a8c6623ed3c0e6'
             '36d2e36dac53f6422a6d3886caf4ca625ec2b4c33f4ab57ea538a4fd9816ead8ecd1a1f81fb2d4e88090f0d8bbfd8dfff3613111e163c1bf6f8fcbaa33eb506a'
             '49e4a21b84d7f1145401a7dbf7f50b804bc11f649506be261b064ff55f544fb37bccf350edb55f75faae73aba0b471f4228323e01bd71572093ebddab42daa3c'
             '16c822a8f4b15570c9ef0331fec4b1c1b2daa49e9c36db3d038ae19ded3d5b7934b566a50b6850a6385175f01705ccf5a3c18d683a54512d0ced7e9ad981e564'
@@ -49,12 +49,12 @@ export KBUILD_BUILD_USER=$pkgbase
 export KBUILD_BUILD_TIMESTAMP="$(date -Ru${SOURCE_DATE_EPOCH:+d @$SOURCE_DATE_EPOCH})"
 
 prepare() {
-  cd $_srcname
+  cd "$srcdir"/linux-$pkgver
 
   echo "Setting version..."
   scripts/setlocalversion --save-scmversion
   echo "-$pkgrel" > localversion.10-pkgrel
-  echo "archfire" > localversion.20-pkgname
+  echo "-archfire" > localversion.20-pkgname
 
   echo "Applying patches..."
   echo "Layer7-patch"
@@ -100,8 +100,8 @@ prepare() {
 }
 
 build() {
-  cd $_srcname
-  make bzImage modules htmldocs
+  cd "$srcdir"/linux-$pkgver
+  make bzImage modules
 }
 
 _package() {
@@ -110,7 +110,7 @@ _package() {
   optdepends=('crda: to set the correct wireless channels of your country'
               'linux-firmware: firmware images needed for some devices')
 
-  cd $_srcname
+  cd "$srcdir"/linux-$pkgver
   local kernver="$(<version)"
   local modulesdir="$pkgdir/usr/lib/modules/$kernver"
 
@@ -135,7 +135,7 @@ _package() {
 _package-headers() {
   pkgdesc="Headers and scripts for building modules for the $pkgdesc kernel"
 
-  cd $_srcname
+  cd "$srcdir"/linux-$pkgver
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
 
   echo "Installing build files..."
@@ -213,7 +213,7 @@ _package-headers() {
 _package-docs() {
   pkgdesc="Documentation for the $pkgdesc kernel"
 
-  cd $_srcname
+  cd "$srcdir"/linux-$pkgver
   local builddir="$pkgdir/usr/lib/modules/$(<version)/build"
 
   echo "Installing documentation..."
